@@ -1,0 +1,21 @@
+{
+    "folders": [
+        {
+            "name": "snippetbox-backend-user",
+            "path": "snippetbox-backend-user"
+        },
+        {
+            "name": "snippetbox-backend-snippet",
+            "path": "snippetbox-backend-snippet"
+        },
+        {
+            "name": "snippetbox-docker",
+            "path": "snippetbox-docker"
+        },
+        {
+            "name": ".",
+            "path": "."
+        }
+    ],
+    "settings": {}
+}

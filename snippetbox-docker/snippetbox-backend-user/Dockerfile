@@ -1,18 +1,25 @@
-# syntax=docker/dockerfile:1
 ARG GO_VERSION=1.27
 
-FROM golang:${GO_VERSION}-alpine AS build
+FROM golang:${GO_VERSION}-alpine AS base
 WORKDIR /src
-COPY . .
-RUN go mod tidy && \
-    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/backend ./cmd/backend
+ENV CGO_ENABLED=0
 
-FROM alpine:3.22
-RUN apk add --no-cache ca-certificates tzdata && \
-    addgroup -S app && adduser -S -G app app
-COPY --from=build /out/backend /usr/local/bin/backend
+FROM base AS deps
+COPY go.mod go.sum ./
+RUN go mod download
+
+FROM deps AS builder
+COPY . .
+RUN go build -trimpath -ldflags="-s -w" -o /out/backend ./cmd/backend
+
+FROM alpine:3.22 AS runner
+ENV APP_ENV=production \
+    HTTP_ADDR=:8080
+RUN apk add --no-cache ca-certificates tzdata \
+    && addgroup -S app && adduser -S -G app app
+COPY --from=builder --chown=app:app /out/backend /usr/local/bin/backend
 USER app
 EXPOSE 8080
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=5 \
-  CMD wget -qO- http://127.0.0.1:8081/ping >/dev/null || exit 1
-ENTRYPOINT ["backend"]
+  CMD wget -qO- http://127.0.0.1:8080/ping >/dev/null || exit 1
+CMD ["backend"]

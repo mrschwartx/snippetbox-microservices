@@ -9,6 +9,10 @@
             "path": "snippetbox-backend-snippet"
         },
         {
+            "name": "snippetbox-frontend",
+            "path": "snippetbox-frontend"
+        },
+        {
             "name": "snippetbox-docker",
             "path": "snippetbox-docker"
         },

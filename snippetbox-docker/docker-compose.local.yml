@@ -5,13 +5,17 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-R00t_S9p!tBox_2026}
-      MYSQL_DATABASE: ${DB_NAME:-snippetbox}
-      MYSQL_USER: ${DB_USER:-snippetbox}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-S9p!tBox_2026@Db}
+      USER_DB_NAME: ${USER_DB_NAME:-snippetbox_user}
+      USER_DB_USER: ${USER_DB_USER:-snippetbox_user}
+      USER_DB_PASSWORD: ${USER_DB_PASSWORD:-S9p!tBox_2026@User}
+      SNIPPET_DB_NAME: ${SNIPPET_DB_NAME:-snippetbox_snippet}
+      SNIPPET_DB_USER: ${SNIPPET_DB_USER:-snippetbox_snippet}
+      SNIPPET_DB_PASSWORD: ${SNIPPET_DB_PASSWORD:-S9p!tBox_2026@Snippet}
     ports:
       - "3306:3306"
     volumes:
       - snippetbox-mysql-data:/var/lib/mysql
+      - ./mysql/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 5s
@@ -19,4 +23,86 @@ services:
       retries: 20
 
   snippetbox-backend-user:
+    build:
+      context: ../snippetbox-backend-user
+      dockerfile: ../snippetbox-docker/snippetbox-backend-user/Dockerfile
+    image: snippetbox-backend-user:local
+    container_name: snippetbox-backend-user
+    restart: unless-stopped
+    ports:
+      - "${USER_PORT:-8080}:8080"
+    environment:
+      HTTP_ADDR: ":8080"
+      APP_ENV: production
+      LOG_LEVEL: info
+      DB_HOST: snippetbox-mysql
+      DB_PORT: "3306"
+      DB_USER: ${USER_DB_USER:-snippetbox_user}
+      DB_PASSWORD: ${USER_DB_PASSWORD:-S9p!tBox_2026@User}
+      DB_NAME: ${USER_DB_NAME:-snippetbox_user}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-0123456789abcdef}
+      JWT_TTL: 12h
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+    depends_on:
+      snippetbox-mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/ping"]
+      interval: 10s
+      timeout: 3s
+      start_period: 20s
+      retries: 5
+
   snippetbox-backend-snippet:
+    build:
+      context: ../snippetbox-backend-snippet
+      dockerfile: ../snippetbox-docker/snippetbox-backend-snippet/Dockerfile
+    image: snippetbox-backend-snippet:local
+    container_name: snippetbox-backend-snippet
+    restart: unless-stopped
+    ports:
+      - "${SNIPPET_PORT:-8082}:8080"
+    environment:
+      HTTP_ADDR: ":8080"
+      APP_ENV: production
+      LOG_LEVEL: info
+      DB_HOST: snippetbox-mysql
+      DB_PORT: "3306"
+      DB_USER: ${SNIPPET_DB_USER:-snippetbox_snippet}
+      DB_PASSWORD: ${SNIPPET_DB_PASSWORD:-S9p!tBox_2026@Snippet}
+      DB_NAME: ${SNIPPET_DB_NAME:-snippetbox_snippet}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-0123456789abcdef}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+    depends_on:
+      snippetbox-mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/ping"]
+      interval: 10s
+      timeout: 3s
+      start_period: 20s
+      retries: 5
+
+  snippetbox-frontend:
+    build:
+      context: ../snippetbox-frontend
+      dockerfile: ../snippetbox-docker/snippetbox-frontend/Dockerfile
+    image: snippetbox-frontend:local
+    container_name: snippetbox-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      snippetbox-backend-user:
+        condition: service_healthy
+      snippetbox-backend-snippet:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 5
+
+volumes:
+  snippetbox-mysql-data:

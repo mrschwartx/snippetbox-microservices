@@ -5,13 +5,17 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: P@ssw0rd!
-      MYSQL_DATABASE: snippetbox_dev
-      MYSQL_USER: dev_user
-      MYSQL_PASSWORD: dev_pass
+      USER_DB_NAME: snippetbox_user_dev
+      USER_DB_USER: dev_user
+      USER_DB_PASSWORD: dev_pass
+      SNIPPET_DB_NAME: snippetbox_snippet_dev
+      SNIPPET_DB_USER: dev_user
+      SNIPPET_DB_PASSWORD: dev_pass
     ports:
       - "3306:3306"
     volumes:
       - snippetbox-mysql-data:/var/lib/mysql
+      - ./mysql/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 5s

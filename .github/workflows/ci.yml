@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   commitlint:
-    name: Snippetbox commit messages
+    name: SnippetBox commit messages
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     timeout-minutes: 5
@@ -30,7 +30,7 @@ jobs:
           configFile: .commitlintrc.json
 
   snippetbox-backend-quality:
-    name: Snippetbox backend ${{ matrix.service }} code quality
+    name: SnippetBox backend ${{ matrix.service }} code quality
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -82,7 +82,7 @@ jobs:
           retention-days: 7
 
   snippetbox-backend-build:
-    name: Snippetbox backend ${{ matrix.service }} build
+    name: SnippetBox backend ${{ matrix.service }} build
     runs-on: ubuntu-latest
     needs: snippetbox-backend-quality
     timeout-minutes: 15
@@ -104,7 +104,7 @@ jobs:
         run: make build
 
   snippetbox-frontend-quality:
-    name: Snippetbox frontend code quality
+    name: SnippetBox frontend code quality
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -137,7 +137,7 @@ jobs:
           retention-days: 7
 
   snippetbox-frontend-build:
-    name: Snippetbox frontend build
+    name: SnippetBox frontend build
     runs-on: ubuntu-latest
     needs: snippetbox-frontend-quality
     timeout-minutes: 15
@@ -157,7 +157,7 @@ jobs:
         run: npm run build
 
   snippetbox-frontend-e2e-browser:
-    name: Snippetbox frontend end-to-end browser
+    name: SnippetBox frontend end-to-end browser
     runs-on: ubuntu-latest
     needs: snippetbox-frontend-build
     timeout-minutes: 20
@@ -188,7 +188,7 @@ jobs:
           retention-days: 7
 
   snippetbox-docker:
-    name: Snippetbox docker containers
+    name: SnippetBox docker containers
     runs-on: ubuntu-latest
     needs: [snippetbox-backend-build, snippetbox-frontend-build]
     timeout-minutes: 25

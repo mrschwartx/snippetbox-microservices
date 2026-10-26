@@ -5,7 +5,7 @@ test.describe('navigation and layout', () => {
   test('the brand link returns to the home page', async ({ page }) => {
     await page.goto('/user/login')
 
-    await page.getByRole('link', { name: 'Snippetbox' }).click()
+    await page.getByRole('link', { name: 'SnippetBox' }).click()
 
     await expect(page).toHaveURL('/')
   })

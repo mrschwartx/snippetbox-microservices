@@ -1,6 +1,6 @@
-# Snippetbox Backend Snippet
+# SnippetBox Backend Snippet
 
-Service snippet Snippetbox: membuat dan membaca snippet yang kedaluwarsa sendiri. Go, Echo v5, GORM, MySQL, JWT.
+Service snippet SnippetBox: membuat dan membaca snippet yang kedaluwarsa sendiri. Go, Echo v5, GORM, MySQL, JWT.
 
 Service ini tidak menyimpan pengguna dan tidak memanggil service lain. Untuk membuat snippet, token dari service user diverifikasi secara lokal memakai `JWT_SECRET` yang sama, tanpa query ke database akun.
 
@@ -51,7 +51,7 @@ Route `/api/v1/auth/*` tidak ada di service ini; route itu dimiliki service user
 | Variabel | Default | Keterangan |
 | --- | --- | --- |
 | `JWT_SECRET` | wajib | minimal 32 karakter; harus sama dengan service user |
-| `HTTP_ADDR` | `:8080` | `.env.example` memakai `:8082` agar tidak bentrok dengan service user saat dijalankan di host |
+| `HTTP_ADDR` | `:8082` | `.env.example` memakai `:8082` agar tidak bentrok dengan service user saat dijalankan di host |
 | `APP_ENV` | `development` | |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
 | `DB_DSN` | kosong | jika diisi, menggantikan semua `DB_*` di bawah |

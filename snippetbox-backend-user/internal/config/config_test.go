@@ -34,7 +34,7 @@ func TestLoad_Defaults(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "development", cfg.Env)
-	assert.Equal(t, ":8080", cfg.HTTPAddr)
+	assert.Equal(t, ":8081", cfg.HTTPAddr)
 	assert.Equal(t, slog.LevelInfo, cfg.LogLevel)
 	assert.Equal(t, 30, cfg.DBConnectRetries)
 	assert.Equal(t, 2*time.Second, cfg.DBConnectRetryDelay)

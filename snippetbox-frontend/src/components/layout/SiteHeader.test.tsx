@@ -11,6 +11,6 @@ describe('SiteHeader', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('link', { name: 'Snippetbox' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'SnippetBox' })).toHaveAttribute('href', '/')
   })
 })

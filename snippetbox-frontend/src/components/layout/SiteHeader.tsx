@@ -5,7 +5,7 @@ export function SiteHeader() {
     <header className="brand-bar border-b border-line pt-[33px] pb-[27px] text-center">
       <h1>
         <Link to="/" className="logo-link">
-          Snippetbox
+          SnippetBox
         </Link>
       </h1>
     </header>

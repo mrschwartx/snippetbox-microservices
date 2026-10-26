@@ -1,6 +1,6 @@
-# Snippetbox Backend User
+# SnippetBox Backend User
 
-Service akun Snippetbox: signup, login, logout, dan data pengguna saat ini. Go, Echo v5, GORM, MySQL, JWT.
+Service akun SnippetBox: signup, login, logout, dan data pengguna saat ini. Go, Echo v5, GORM, MySQL, JWT.
 
 Service ini satu-satunya yang menerbitkan token. Service snippet hanya memverifikasi token tersebut memakai `JWT_SECRET` yang sama.
 
@@ -53,7 +53,7 @@ Route `/api/v1/snippets` tidak ada di service ini; route itu dimiliki service sn
 | --- | --- | --- |
 | `JWT_SECRET` | wajib | minimal 32 karakter; harus sama dengan service snippet |
 | `JWT_TTL` | `12h` | masa berlaku token |
-| `HTTP_ADDR` | `:8080` | |
+| `HTTP_ADDR` | `:8081` | |
 | `APP_ENV` | `development` | |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
 | `DB_DSN` | kosong | jika diisi, menggantikan semua `DB_*` di bawah |

@@ -1,4 +1,4 @@
-# Snippetbox Frontend
+# SnippetBox Frontend
 
 React 19 + TypeScript + Vite + Tailwind CSS 4, with TanStack Query and React Router.
 
@@ -11,7 +11,7 @@ npm run dev
 ```
 
 `VITE_API_BASE_URL` is the API root used by the browser (default `/api/v1`).
-`VITE_USER_PROXY_TARGET` is where the dev server proxies `/api/v1/auth` (default `http://localhost:8080`).
+`VITE_USER_PROXY_TARGET` is where the dev server proxies `/api/v1/auth` (default `http://localhost:8081`).
 `VITE_SNIPPET_PROXY_TARGET` is where it proxies `/api/v1/snippets` (default `http://localhost:8082`).
 
 ## Scripts

@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Snippetbox Snippet API",
+    "title": "SnippetBox Snippet API",
     "version": "1.0.0",
-    "description": "REST API of the Snippetbox snippet service: share short text and code snippets that expire after 1 day, 1 week or 1 year.\n\nReading is public. Creating a snippet requires `Authorization: Bearer <token>` with a token issued by the user service through `POST /api/v1/auth/login`."
+    "description": "REST API of the SnippetBox snippet service: share short text and code snippets that expire after 1 day, 1 week or 1 year.\n\nReading is public. Creating a snippet requires `Authorization: Bearer <token>` with a token issued by the user service through `POST /api/v1/auth/login`."
   },
   "servers": [
     {

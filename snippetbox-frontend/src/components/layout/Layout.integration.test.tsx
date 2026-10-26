@@ -10,7 +10,7 @@ describe('Layout', () => {
   it('shows the brand, the navigation and the footer on every page', async () => {
     renderApp('/nowhere')
 
-    expect(screen.getByRole('link', { name: 'Snippetbox' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'SnippetBox' })).toHaveAttribute('href', '/')
     expect(screen.getByRole('navigation')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
     expect(await screen.findByText('Not Found')).toBeInTheDocument()

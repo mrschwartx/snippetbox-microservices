@@ -15,7 +15,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api/v1/auth': {
-        target: process.env.VITE_USER_PROXY_TARGET ?? 'http://localhost:8080',
+        target: process.env.VITE_USER_PROXY_TARGET ?? 'http://localhost:8081',
         changeOrigin: true,
       },
       '/api/v1/snippets': {

@@ -17,6 +17,10 @@
             "path": "snippetbox-docker"
         },
         {
+            "name": "snippetbox-deploys",
+            "path": "snippetbox-deploys"
+        },
+        {
             "name": ".",
             "path": "."
         }

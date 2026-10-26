@@ -1,8 +1,8 @@
-# Snippetbox (Go microservices + React)
+# SnippetBox (Go microservices + React)
 
 A small app for sharing short snippets of text and code that expire on their own, built as **two Go JSON services** (user and snippet) and a **React single-page frontend**, all runnable with Docker Compose.
 
-It is the microservice version of the Snippetbox monolith: the HTTP contract the browser sees is unchanged, but accounts and snippets now live in separate services with separate databases. Each service has its own Go module, Dockerfile and test suites, and can be built and deployed on its own.
+It is the microservice version of the SnippetBox monolith: the HTTP contract the browser sees is unchanged, but accounts and snippets now live in separate services with separate databases. Each service has its own Go module, Dockerfile and test suites, and can be built and deployed on its own.
 
 The browser talks only to the frontend origin: in Docker, nginx serves the built app and routes `/api/v1/auth/` to the user service and `/api/v1/snippets` to the snippet service, and in development the Vite dev server does the same.
 
@@ -112,7 +112,7 @@ Every Docker variable has a default, so no environment file is needed locally. A
 
 ## Architecture
 
-Snippetbox is three applications that share one HTTP contract. Each backend service is split into layers with one-way dependencies and owns its own data. The frontend is organised by feature, with thin pages on top.
+SnippetBox is three applications that share one HTTP contract. Each backend service is split into layers with one-way dependencies and owns its own data. The frontend is organised by feature, with thin pages on top.
 
 ### Services
 

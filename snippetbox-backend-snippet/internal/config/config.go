@@ -39,7 +39,7 @@ func Load(getenv func(string) string) (Config, error) {
 
 	cfg := Config{
 		Env:      env.get("APP_ENV", "development"),
-		HTTPAddr: env.get("HTTP_ADDR", ":8080"),
+		HTTPAddr: env.get("HTTP_ADDR", ":8082"),
 	}
 
 	if err := cfg.LogLevel.UnmarshalText([]byte(env.get("LOG_LEVEL", "info"))); err != nil {

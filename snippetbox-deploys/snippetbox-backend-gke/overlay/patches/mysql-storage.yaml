@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: snippetbox-mysql
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: snippetbox-mysql
+          app.kubernetes.io/component: database
+          app.kubernetes.io/part-of: snippetbox
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard-rwo
+        resources:
+          requests:
+            storage: 20Gi

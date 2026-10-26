@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: snippetbox
+resources:
+  - ../base
+  - ingress.yaml
+images:
+  - name: snippetbox-backend-user
+    newTag: local
+  - name: snippetbox-backend-snippet
+    newTag: local
+  - name: snippetbox-frontend
+    newTag: local
+configMapGenerator:
+  - name: snippetbox-config
+    behavior: merge
+    literals:
+      - CORS_ALLOWED_ORIGINS=http://snippetbox.localtest.me
+secretGenerator:
+  - name: snippetbox-secrets
+    envs:
+      - secrets/snippetbox.env

@@ -1,0 +1,68 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: snippetbox-backend-user
+  labels:
+    app.kubernetes.io/name: snippetbox-backend-user
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: snippetbox-backend-user
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: snippetbox-backend-snippet
+  labels:
+    app.kubernetes.io/name: snippetbox-backend-snippet
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: snippetbox-backend-snippet
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: snippetbox-frontend
+  labels:
+    app.kubernetes.io/name: snippetbox-frontend
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: snippetbox-frontend
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

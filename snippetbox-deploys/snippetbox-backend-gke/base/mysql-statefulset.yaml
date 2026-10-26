@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: snippetbox-mysql
+  labels:
+    app.kubernetes.io/name: snippetbox-mysql
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  serviceName: snippetbox-mysql
+  replicas: 1
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: snippetbox-mysql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: snippetbox-mysql
+        app.kubernetes.io/component: database
+        app.kubernetes.io/part-of: snippetbox
+    spec:
+      serviceAccountName: snippetbox-mysql
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mysql
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: snippetbox-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: USER_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: snippetbox-secrets
+                  key: USER_DB_PASSWORD
+            - name: SNIPPET_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: snippetbox-secrets
+                  key: SNIPPET_DB_PASSWORD
+            - name: USER_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: snippetbox-config
+                  key: USER_DB_NAME
+            - name: USER_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: snippetbox-config
+                  key: USER_DB_USER
+            - name: SNIPPET_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: snippetbox-config
+                  key: SNIPPET_DB_NAME
+            - name: SNIPPET_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: snippetbox-config
+                  key: SNIPPET_DB_USER
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+              subPath: data
+            - name: init
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: init
+          configMap:
+            name: snippetbox-mysql-init
+            defaultMode: 365
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: snippetbox-mysql
+          app.kubernetes.io/component: database
+          app.kubernetes.io/part-of: snippetbox
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi

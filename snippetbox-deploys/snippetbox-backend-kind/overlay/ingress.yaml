@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: snippetbox
+  labels:
+    app.kubernetes.io/name: snippetbox
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: snippetbox.localtest.me
+      http:
+        paths:
+          - path: /api/v1/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: snippetbox-backend-user
+                port:
+                  number: 8080
+          - path: /api/v1/snippets
+            pathType: Prefix
+            backend:
+              service:
+                name: snippetbox-backend-snippet
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: snippetbox-frontend
+                port:
+                  number: 80

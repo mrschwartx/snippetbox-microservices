@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: snippetbox-backend-user
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+    cloud.google.com/backend-config: '{"default":"snippetbox-backend-user"}'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: snippetbox-backend-snippet
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+    cloud.google.com/backend-config: '{"default":"snippetbox-backend-snippet"}'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: snippetbox-frontend
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+    cloud.google.com/backend-config: '{"default":"snippetbox-frontend"}'

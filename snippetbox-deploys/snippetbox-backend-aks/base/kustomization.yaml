@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - serviceaccounts.yaml
+  - mysql-service.yaml
+  - mysql-statefulset.yaml
+  - mysql-networkpolicy.yaml
+  - user-service.yaml
+  - user-deployment.yaml
+  - snippet-service.yaml
+  - snippet-deployment.yaml
+  - frontend-service.yaml
+  - frontend-deployment.yaml
+configMapGenerator:
+  - name: snippetbox-config
+    literals:
+      - APP_ENV=production
+      - LOG_LEVEL=info
+      - DB_HOST=snippetbox-mysql
+      - DB_PORT=3306
+      - DB_CONNECT_RETRIES=90
+      - DB_CONNECT_RETRY_DELAY=2s
+      - JWT_TTL=12h
+      - USER_DB_NAME=snippetbox_user
+      - USER_DB_USER=snippetbox_user
+      - SNIPPET_DB_NAME=snippetbox_snippet
+      - SNIPPET_DB_USER=snippetbox_snippet
+      - CORS_ALLOWED_ORIGINS=http://localhost
+  - name: snippetbox-mysql-init
+    files:
+      - init-databases.sh=mysql/init-databases.sh
+  - name: snippetbox-nginx
+    files:
+      - default.conf.template=nginx/default.conf.template

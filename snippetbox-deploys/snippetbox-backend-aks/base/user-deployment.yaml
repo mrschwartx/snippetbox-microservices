@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snippetbox-backend-user
+  labels:
+    app.kubernetes.io/name: snippetbox-backend-user
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: snippetbox-backend-user
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: snippetbox-backend-user
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/part-of: snippetbox
+    spec:
+      serviceAccountName: snippetbox-backend-user
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: backend
+          image: snippetbox-backend-user
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: snippetbox-config
+          env:
+            - name: HTTP_ADDR
+              value: ":8080"
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: snippetbox-config
+                  key: USER_DB_USER
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: snippetbox-config
+                  key: USER_DB_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: snippetbox-secrets
+                  key: USER_DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: snippetbox-secrets
+                  key: JWT_SECRET
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 2
+            failureThreshold: 100
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sleep
+                  - "5"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL

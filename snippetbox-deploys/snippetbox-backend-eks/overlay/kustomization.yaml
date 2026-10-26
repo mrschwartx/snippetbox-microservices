@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: snippetbox
+resources:
+  - ../base
+  - storageclass.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - pdb.yaml
+images:
+  - name: snippetbox-backend-user
+    newName: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/snippetbox-backend-user
+    newTag: ${IMAGE_TAG}
+  - name: snippetbox-backend-snippet
+    newName: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/snippetbox-backend-snippet
+    newTag: ${IMAGE_TAG}
+  - name: snippetbox-frontend
+    newName: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/snippetbox-frontend
+    newTag: ${IMAGE_TAG}
+configMapGenerator:
+  - name: snippetbox-config
+    behavior: merge
+    literals:
+      - CORS_ALLOWED_ORIGINS=https://${DOMAIN}
+secretGenerator:
+  - name: snippetbox-secrets
+    envs:
+      - secrets/snippetbox.env
+patches:
+  - path: patches/resources.yaml
+  - path: patches/topology-spread.yaml
+  - path: patches/mysql-storage.yaml
+  - path: patches/services.yaml
+replicas:
+  - name: snippetbox-backend-user
+    count: 2
+  - name: snippetbox-backend-snippet
+    count: 2
+  - name: snippetbox-frontend
+    count: 2

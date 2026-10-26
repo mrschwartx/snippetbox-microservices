@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snippetbox-backend-user
+spec:
+  template:
+    spec:
+      containers:
+        - name: backend
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snippetbox-backend-snippet
+spec:
+  template:
+    spec:
+      containers:
+        - name: backend
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snippetbox-frontend
+spec:
+  template:
+    spec:
+      containers:
+        - name: frontend
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: snippetbox-mysql
+spec:
+  template:
+    spec:
+      containers:
+        - name: mysql
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 2Gi

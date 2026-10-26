@@ -1,0 +1,41 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: snippetbox-backend-user
+  labels:
+    app.kubernetes.io/name: snippetbox-backend-user
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: snippetbox-backend-user
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: snippetbox-backend-snippet
+  labels:
+    app.kubernetes.io/name: snippetbox-backend-snippet
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: snippetbox-backend-snippet
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: snippetbox-frontend
+  labels:
+    app.kubernetes.io/name: snippetbox-frontend
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: snippetbox
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: snippetbox-frontend

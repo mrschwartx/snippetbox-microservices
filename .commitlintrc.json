@@ -9,7 +9,7 @@
     "scope-enum": [
       2,
       "always",
-      ["backend", "frontend", "docker", "ci", "deps", "snippet", "user"]
+      ["snippetbox", "backend", "frontend", "docker", "ci", "deps", "snippet", "user"]
     ],
     "scope-case": [2, "always", "lower-case"],
     "subject-case": [0],

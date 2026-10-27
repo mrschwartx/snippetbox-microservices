@@ -1,36 +1,22 @@
-name: CI
+name: SnippetBox CI
 
 on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: snippetbox-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  commitlint:
-    name: SnippetBox commit messages
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    timeout-minutes: 5
-    permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v6
-        with:
-          configFile: .commitlintrc.json
-
-  snippetbox-backend-quality:
-    name: SnippetBox backend ${{ matrix.service }} code quality
+  msa-backend-testing:
+    name: snippetbox backend ${{ matrix.service }} testing
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -39,52 +25,45 @@ jobs:
         service: [user, snippet]
     defaults:
       run:
-        working-directory: snippetbox-backend-${{ matrix.service }}
+        working-directory: snippetbox-msa-backend-${{ matrix.service }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: snippetbox-backend-${{ matrix.service }}/go.mod
+          go-version-file: snippetbox-msa-backend-${{ matrix.service }}/go.mod
           cache: true
-          cache-dependency-path: snippetbox-backend-${{ matrix.service }}/go.sum
-      - name: Install
-        run: go mod download
-      - name: Verify modules
-        run: |
+          cache-dependency-path: snippetbox-msa-backend-${{ matrix.service }}/go.sum
+      - run: go mod download
+      - run: |
           go mod verify
           go mod tidy -diff
-      - name: Format
-        run: |
+      - run: |
           unformatted=$(gofmt -s -l .)
           if [ -n "$unformatted" ]; then
             echo "$unformatted"
             exit 1
           fi
-      - name: Vet
-        run: make vet
-      - name: Unit tests
-        run: make test/race
-      - name: Integration tests
-        run: make test/integration
-      - name: E2E tests
-        run: make test/e2e
-      - name: Testing coverage
-        run: |
+      - run: make vet
+      - run: make test/race
+      - run: make test/integration
+      - run: make test/e2e
+      - run: |
           make test/cover
           go tool cover -html=coverage.out -o coverage.html
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
-          name: backend-${{ matrix.service }}-coverage
+          name: backend-coverage-${{ matrix.service }}
           path: |
-            snippetbox-backend-${{ matrix.service }}/coverage.out
-            snippetbox-backend-${{ matrix.service }}/coverage.html
+            snippetbox-msa-backend-${{ matrix.service }}/coverage.out
+            snippetbox-msa-backend-${{ matrix.service }}/coverage.html
+          if-no-files-found: error
           retention-days: 7
 
-  snippetbox-backend-build:
-    name: SnippetBox backend ${{ matrix.service }} build
+  msa-backend-build:
+    name: snippetbox backend ${{ matrix.service }} build
     runs-on: ubuntu-latest
-    needs: snippetbox-backend-quality
+    needs: [msa-backend-testing]
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -92,19 +71,18 @@ jobs:
         service: [user, snippet]
     defaults:
       run:
-        working-directory: snippetbox-backend-${{ matrix.service }}
+        working-directory: snippetbox-msa-backend-${{ matrix.service }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: snippetbox-backend-${{ matrix.service }}/go.mod
+          go-version-file: snippetbox-msa-backend-${{ matrix.service }}/go.mod
           cache: true
-          cache-dependency-path: snippetbox-backend-${{ matrix.service }}/go.sum
-      - name: Build
-        run: make build
+          cache-dependency-path: snippetbox-msa-backend-${{ matrix.service }}/go.sum
+      - run: make build
 
-  snippetbox-msa-frontend-quality:
-    name: SnippetBox frontend code quality
+  msa-frontend-testing:
+    name: snippetbox frontend testing
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -117,18 +95,12 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: snippetbox-msa-frontend/package-lock.json
-      - name: Install
-        run: npm ci
-      - name: Lint
-        run: npm run lint
-      - name: Typecheck
-        run: npm run typecheck
-      - name: Unit tests
-        run: npm run test:unit
-      - name: Integration tests
-        run: npm run test:integration
-      - name: Testing coverage
-        run: npm run test:coverage
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run test:integration
+      - run: npm run test:coverage
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
@@ -136,10 +108,10 @@ jobs:
           path: snippetbox-msa-frontend/coverage
           retention-days: 7
 
-  snippetbox-msa-frontend-build:
+  msa-frontend-build:
     name: SnippetBox frontend build
     runs-on: ubuntu-latest
-    needs: snippetbox-msa-frontend-quality
+    needs: [msa-frontend-testing]
     timeout-minutes: 15
     defaults:
       run:
@@ -151,15 +123,13 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: snippetbox-msa-frontend/package-lock.json
-      - name: Install
-        run: npm ci
-      - name: Build
-        run: npm run build
+      - run: npm ci
+      - run: npm run build
 
-  snippetbox-msa-frontend-e2e-browser:
-    name: SnippetBox frontend end-to-end browser
+  msa-frontend-e2e-browser:
+    name: snippetbox frontend e2e browser
     runs-on: ubuntu-latest
-    needs: snippetbox-msa-frontend-build
+    needs: [msa-frontend-testing]
     timeout-minutes: 20
     defaults:
       run:
@@ -171,12 +141,9 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: snippetbox-msa-frontend/package-lock.json
-      - name: Install
-        run: npm ci
-      - name: Install browser
-        run: npx playwright install --with-deps chromium
-      - name: Run browser tests
-        run: npx playwright test
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
       - name: Upload report
         if: failure()
         uses: actions/upload-artifact@v4
@@ -187,10 +154,10 @@ jobs:
             snippetbox-msa-frontend/test-results
           retention-days: 7
 
-  snippetbox-docker:
+  msa-docker:
     name: SnippetBox docker containers
     runs-on: ubuntu-latest
-    needs: [snippetbox-backend-build, snippetbox-msa-frontend-build]
+    needs: [msa-backend-build, msa-frontend-build, msa-frontend-e2e-browser]
     timeout-minutes: 25
     defaults:
       run:
@@ -234,7 +201,7 @@ jobs:
           for port in 8081 8082; do
             ready=false
             for i in $(seq 1 60); do
-              if curl -fsS "http://localhost:$port/ping" | grep -q '"status":"ok"'; then
+              if curl -fsS "http://localhost:$port/ping" | jq -e '.status == "ok"' > /dev/null; then
                 ready=true
                 break
               fi

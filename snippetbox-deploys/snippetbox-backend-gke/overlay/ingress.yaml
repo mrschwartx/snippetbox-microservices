@@ -20,20 +20,20 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: snippetbox-backend-user
+                name: snippetbox-msa-backend-user
                 port:
                   number: 8080
           - path: /api/v1/snippets
             pathType: Prefix
             backend:
               service:
-                name: snippetbox-backend-snippet
+                name: snippetbox-msa-backend-snippet
                 port:
                   number: 8080
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: snippetbox-frontend
+                name: snippetbox-msa-frontend
                 port:
                   number: 80

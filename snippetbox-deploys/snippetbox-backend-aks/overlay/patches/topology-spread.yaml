@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-backend-user
+  name: snippetbox-msa-backend-user
 spec:
   template:
     spec:
@@ -11,18 +11,18 @@ spec:
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: snippetbox-backend-user
+              app.kubernetes.io/name: snippetbox-msa-backend-user
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: snippetbox-backend-user
+              app.kubernetes.io/name: snippetbox-msa-backend-user
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-backend-snippet
+  name: snippetbox-msa-backend-snippet
 spec:
   template:
     spec:
@@ -32,18 +32,18 @@ spec:
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: snippetbox-backend-snippet
+              app.kubernetes.io/name: snippetbox-msa-backend-snippet
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: snippetbox-backend-snippet
+              app.kubernetes.io/name: snippetbox-msa-backend-snippet
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-frontend
+  name: snippetbox-msa-frontend
 spec:
   template:
     spec:
@@ -53,10 +53,10 @@ spec:
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: snippetbox-frontend
+              app.kubernetes.io/name: snippetbox-msa-frontend
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: snippetbox-frontend
+              app.kubernetes.io/name: snippetbox-msa-frontend

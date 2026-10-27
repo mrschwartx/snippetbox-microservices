@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-frontend
+  name: snippetbox-msa-frontend
   labels:
-    app.kubernetes.io/name: snippetbox-frontend
+    app.kubernetes.io/name: snippetbox-msa-frontend
     app.kubernetes.io/component: frontend
     app.kubernetes.io/part-of: snippetbox
 spec:
@@ -16,15 +16,15 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app.kubernetes.io/name: snippetbox-frontend
+      app.kubernetes.io/name: snippetbox-msa-frontend
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: snippetbox-frontend
+        app.kubernetes.io/name: snippetbox-msa-frontend
         app.kubernetes.io/component: frontend
         app.kubernetes.io/part-of: snippetbox
     spec:
-      serviceAccountName: snippetbox-frontend
+      serviceAccountName: snippetbox-msa-frontend
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 30
       securityContext:
@@ -32,7 +32,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: frontend
-          image: snippetbox-frontend
+          image: snippetbox-msa-frontend
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -45,9 +45,9 @@ spec:
             - name: NGINX_ENTRYPOINT_LOCAL_RESOLVERS
               value: "1"
             - name: USER_SERVICE_URL
-              value: http://snippetbox-backend-user.$(POD_NAMESPACE).svc.cluster.local:8080
+              value: http://snippetbox-msa-backend-user.$(POD_NAMESPACE).svc.cluster.local:8080
             - name: SNIPPET_SERVICE_URL
-              value: http://snippetbox-backend-snippet.$(POD_NAMESPACE).svc.cluster.local:8080
+              value: http://snippetbox-msa-backend-snippet.$(POD_NAMESPACE).svc.cluster.local:8080
           startupProbe:
             httpGet:
               path: /

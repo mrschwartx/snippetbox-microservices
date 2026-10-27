@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: snippetbox-backend-user
+  name: snippetbox-msa-backend-user
   labels:
-    app.kubernetes.io/name: snippetbox-backend-user
+    app.kubernetes.io/name: snippetbox-msa-backend-user
     app.kubernetes.io/component: backend
     app.kubernetes.io/part-of: snippetbox
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/name: snippetbox-backend-user
+    app.kubernetes.io/name: snippetbox-msa-backend-user
   ports:
     - name: http
       port: 8080

@@ -7,14 +7,14 @@ resources:
   - hpa.yaml
   - pdb.yaml
 images:
-  - name: snippetbox-backend-user
-    newName: ${ACR_NAME}.azurecr.io/snippetbox-backend-user
+  - name: snippetbox-msa-backend-user
+    newName: ${ACR_NAME}.azurecr.io/snippetbox-msa-backend-user
     newTag: ${IMAGE_TAG}
-  - name: snippetbox-backend-snippet
-    newName: ${ACR_NAME}.azurecr.io/snippetbox-backend-snippet
+  - name: snippetbox-msa-backend-snippet
+    newName: ${ACR_NAME}.azurecr.io/snippetbox-msa-backend-snippet
     newTag: ${IMAGE_TAG}
-  - name: snippetbox-frontend
-    newName: ${ACR_NAME}.azurecr.io/snippetbox-frontend
+  - name: snippetbox-msa-frontend
+    newName: ${ACR_NAME}.azurecr.io/snippetbox-msa-frontend
     newTag: ${IMAGE_TAG}
 configMapGenerator:
   - name: snippetbox-config
@@ -30,9 +30,9 @@ patches:
   - path: patches/topology-spread.yaml
   - path: patches/mysql-storage.yaml
 replicas:
-  - name: snippetbox-backend-user
+  - name: snippetbox-msa-backend-user
     count: 2
-  - name: snippetbox-backend-snippet
+  - name: snippetbox-msa-backend-snippet
     count: 2
-  - name: snippetbox-frontend
+  - name: snippetbox-msa-frontend
     count: 2

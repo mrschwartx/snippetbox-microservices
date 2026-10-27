@@ -18,7 +18,7 @@ spec:
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: snippetbox-backend-user
+  name: snippetbox-msa-backend-user
 spec:
   timeoutSec: 30
   connectionDraining:
@@ -34,7 +34,7 @@ spec:
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: snippetbox-backend-snippet
+  name: snippetbox-msa-backend-snippet
 spec:
   timeoutSec: 30
   connectionDraining:
@@ -50,7 +50,7 @@ spec:
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: snippetbox-frontend
+  name: snippetbox-msa-frontend
 spec:
   timeoutSec: 30
   connectionDraining:

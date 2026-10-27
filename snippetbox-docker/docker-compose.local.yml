@@ -22,12 +22,12 @@ services:
       timeout: 5s
       retries: 20
 
-  snippetbox-backend-user:
+  snippetbox-msa-backend-user:
     build:
-      context: ../snippetbox-backend-user
-      dockerfile: ../snippetbox-docker/snippetbox-backend-user/Dockerfile
-    image: snippetbox-backend-user:local
-    container_name: snippetbox-backend-user
+      context: ../snippetbox-msa-backend-user
+      dockerfile: ../snippetbox-docker/snippetbox-msa-backend-user/Dockerfile
+    image: snippetbox-msa-backend-user:local
+    container_name: snippetbox-msa-backend-user
     restart: unless-stopped
     ports:
       - "${USER_PORT:-8081}:8081"
@@ -53,12 +53,12 @@ services:
       start_period: 20s
       retries: 5
 
-  snippetbox-backend-snippet:
+  snippetbox-msa-backend-snippet:
     build:
-      context: ../snippetbox-backend-snippet
-      dockerfile: ../snippetbox-docker/snippetbox-backend-snippet/Dockerfile
-    image: snippetbox-backend-snippet:local
-    container_name: snippetbox-backend-snippet
+      context: ../snippetbox-msa-backend-snippet
+      dockerfile: ../snippetbox-docker/snippetbox-msa-backend-snippet/Dockerfile
+    image: snippetbox-msa-backend-snippet:local
+    container_name: snippetbox-msa-backend-snippet
     restart: unless-stopped
     ports:
       - "${SNIPPET_PORT:-8082}:8082"
@@ -83,19 +83,19 @@ services:
       start_period: 20s
       retries: 5
 
-  snippetbox-frontend:
+  snippetbox-msa-frontend:
     build:
-      context: ../snippetbox-frontend
-      dockerfile: ../snippetbox-docker/snippetbox-frontend/Dockerfile
-    image: snippetbox-frontend:local
-    container_name: snippetbox-frontend
+      context: ../snippetbox-msa-frontend
+      dockerfile: ../snippetbox-docker/snippetbox-msa-frontend/Dockerfile
+    image: snippetbox-msa-frontend:local
+    container_name: snippetbox-msa-frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
-      snippetbox-backend-user:
+      snippetbox-msa-backend-user:
         condition: service_healthy
-      snippetbox-backend-snippet:
+      snippetbox-msa-backend-snippet:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]

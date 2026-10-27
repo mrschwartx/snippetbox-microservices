@@ -8,14 +8,14 @@ resources:
   - hpa.yaml
   - pdb.yaml
 images:
-  - name: snippetbox-backend-user
-    newName: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${AR_REPOSITORY}/snippetbox-backend-user
+  - name: snippetbox-msa-backend-user
+    newName: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${AR_REPOSITORY}/snippetbox-msa-backend-user
     newTag: ${IMAGE_TAG}
-  - name: snippetbox-backend-snippet
-    newName: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${AR_REPOSITORY}/snippetbox-backend-snippet
+  - name: snippetbox-msa-backend-snippet
+    newName: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${AR_REPOSITORY}/snippetbox-msa-backend-snippet
     newTag: ${IMAGE_TAG}
-  - name: snippetbox-frontend
-    newName: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${AR_REPOSITORY}/snippetbox-frontend
+  - name: snippetbox-msa-frontend
+    newName: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${AR_REPOSITORY}/snippetbox-msa-frontend
     newTag: ${IMAGE_TAG}
 configMapGenerator:
   - name: snippetbox-config
@@ -32,9 +32,9 @@ patches:
   - path: patches/mysql-storage.yaml
   - path: patches/services.yaml
 replicas:
-  - name: snippetbox-backend-user
+  - name: snippetbox-msa-backend-user
     count: 2
-  - name: snippetbox-backend-snippet
+  - name: snippetbox-msa-backend-snippet
     count: 2
-  - name: snippetbox-frontend
+  - name: snippetbox-msa-frontend
     count: 2

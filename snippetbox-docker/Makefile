@@ -22,13 +22,13 @@ docker/logs/mysql:
 	$(COMPOSE) logs -f snippetbox-mysql
 
 docker/logs/user:
-	$(COMPOSE) logs -f snippetbox-backend-user
+	$(COMPOSE) logs -f snippetbox-msa-backend-user
 
 docker/logs/snippet:
-	$(COMPOSE) logs -f snippetbox-backend-snippet
+	$(COMPOSE) logs -f snippetbox-msa-backend-snippet
 
 docker/logs/frontend:
-	$(COMPOSE) logs -f snippetbox-frontend
+	$(COMPOSE) logs -f snippetbox-msa-frontend
 
 docker/ps:
 	$(COMPOSE) ps

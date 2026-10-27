@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-backend-user
+  name: snippetbox-msa-backend-user
 spec:
   template:
     spec:
@@ -17,7 +17,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-backend-snippet
+  name: snippetbox-msa-backend-snippet
 spec:
   template:
     spec:
@@ -33,7 +33,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-frontend
+  name: snippetbox-msa-frontend
 spec:
   template:
     spec:

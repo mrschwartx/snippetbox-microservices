@@ -32,10 +32,10 @@ make docker/up
 
 | Service                      | Port | Address                                |
 | ---------------------------- | ---- | -------------------------------------- |
-| `snippetbox-frontend`        | 3000 | http://localhost:3000                  |
-| `snippetbox-backend-user`    | 8080 | http://localhost:8080/api/v1/auth      |
-| `snippetbox-backend-snippet` | 8082 | http://localhost:8082/api/v1/snippets  |
-| User Swagger UI              | 8080 | http://localhost:8080/swagger/         |
+| `snippetbox-msa-frontend`        | 3000 | http://localhost:3000                  |
+| `snippetbox-msa-backend-user`    | 8081 | http://localhost:8081/api/v1/auth      |
+| `snippetbox-msa-backend-snippet` | 8082 | http://localhost:8082/api/v1/snippets  |
+| User Swagger UI              | 8081 | http://localhost:8081/swagger/         |
 | Snippet Swagger UI           | 8082 | http://localhost:8082/swagger/         |
 
 | Goal                                  | Command                                                                           |
@@ -44,13 +44,13 @@ make docker/up
 | Stop Docker                           | `make docker/down` (from `snippetbox-docker`)                                     |
 | Stop Docker and drop data             | `make docker/clean` (from `snippetbox-docker`)                                    |
 | Start the development database        | `make docker/dev/up` (from `snippetbox-docker`)                                   |
-| Run the user service in development   | `cp .env.example .env && make run` (from `snippetbox-backend-user`)               |
-| Run the snippet service in development | `cp .env.example .env && make run` (from `snippetbox-backend-snippet`)           |
-| Run the frontend in development       | `npm ci && cp .env.example .env && npm run dev` (from `snippetbox-frontend`)      |
+| Run the user service in development   | `cp .env.example .env && make run` (from `snippetbox-msa-backend-user`)               |
+| Run the snippet service in development | `cp .env.example .env && make run` (from `snippetbox-msa-backend-snippet`)           |
+| Run the frontend in development       | `npm ci && cp .env.example .env && npm run dev` (from `snippetbox-msa-frontend`)      |
 | Run the Go test suites                | `make test/all` (from each backend folder)                                        |
-| Run the Vitest suites                 | `npm test` (from `snippetbox-frontend`)                                           |
+| Run the Vitest suites                 | `npm test` (from `snippetbox-msa-frontend`)                                           |
 
-Local development uses four terminals. The development database (MySQL on `:3306`, phpMyAdmin on `:8081`) comes from `docker-compose.dev.yml`, which creates `snippetbox_user_dev` and `snippetbox_snippet_dev`; both `.env.example` files already point at it. The two services must share the same `JWT_SECRET`, and both examples do. `make run` and `npm run dev` stay in the foreground.
+Local development uses four terminals. The development database (MySQL on `:3306`, phpMyAdmin on `:5050`) comes from `docker-compose.dev.yml`, which creates `snippetbox_user_dev` and `snippetbox_snippet_dev`; both `.env.example` files already point at it. The two services must share the same `JWT_SECRET`, and both examples do. `make run` and `npm run dev` stay in the foreground.
 
 `USER_PORT`, `SNIPPET_PORT` and `FRONTEND_PORT` override the host ports in Docker. The databases live in the `snippetbox-mysql-data` named volume, which `make docker/clean` removes.
 
@@ -66,11 +66,11 @@ Snippet titles and content are rendered as plain text, which keeps rendering saf
 
 ## Configuration
 
-User service (`snippetbox-backend-user/.env`, loaded automatically by the Makefile):
+User service (`snippetbox-msa-backend-user/.env`, loaded automatically by the Makefile):
 
 | Variable                 | Default                 | Purpose                                                                             |
 | ------------------------ | ----------------------- | ----------------------------------------------------------------------------------- |
-| `HTTP_ADDR`              | `:8080`                 | Listen address                                                                      |
+| `HTTP_ADDR`              | `:8081`                 | Listen address                                                                      |
 | `APP_ENV`                | `development`           | Environment name, reported in the startup log                                       |
 | `LOG_LEVEL`              | `info`                  | `debug`, `info`, `warn` or `error`                                                  |
 | `DB_DSN`                 | empty                   | Full MySQL DSN; when set, it replaces the `DB_*` variables below                    |
@@ -83,14 +83,14 @@ User service (`snippetbox-backend-user/.env`, loaded automatically by the Makefi
 | `JWT_TTL`                | `12h`                   | Token lifetime                                                                      |
 | `CORS_ALLOWED_ORIGINS`   | `http://localhost:3000` | Comma-separated origins, `*` for all; not needed behind the nginx or Vite proxy     |
 
-Snippet service (`snippetbox-backend-snippet/.env`): the same variables except `JWT_TTL`, which only the user service needs. `JWT_SECRET` must be identical in both services. `HTTP_ADDR` is `:8082` in `.env.example` so that both services can run on one host.
+Snippet service (`snippetbox-msa-backend-snippet/.env`): the same variables except `JWT_TTL`, which only the user service needs. `JWT_SECRET` must be identical in both services. `HTTP_ADDR` is `:8082` in `.env.example` so that both services can run on one host.
 
-Frontend (`snippetbox-frontend/.env`):
+Frontend (`snippetbox-msa-frontend/.env`):
 
 | Variable                     | Default                 | Purpose                                                       |
 | ---------------------------- | ----------------------- | ------------------------------------------------------------- |
 | `VITE_API_BASE_URL`          | `/api/v1`               | API base URL used by the browser                              |
-| `VITE_USER_PROXY_TARGET`     | `http://localhost:8080` | Dev server proxy target for `/api/v1/auth`                    |
+| `VITE_USER_PROXY_TARGET`     | `http://localhost:8081` | Dev server proxy target for `/api/v1/auth`                    |
 | `VITE_SNIPPET_PROXY_TARGET`  | `http://localhost:8082` | Dev server proxy target for `/api/v1/snippets`                |
 
 Docker (`snippetbox-docker/.env`, copied from `.env.example`):
@@ -104,7 +104,7 @@ Docker (`snippetbox-docker/.env`, copied from `.env.example`):
 | `SNIPPET_DB_PASSWORD`                            | see `.env.example`                         | Password of the snippet service database user   |
 | `JWT_SECRET`                                     | `change-me-in-production-0123456789abcdef` | Signing key passed to both services             |
 | `CORS_ALLOWED_ORIGINS`                           | `http://localhost:3000`                    | Origins passed to both services                 |
-| `USER_PORT`                                      | `8080`                                     | Host port of the user service                   |
+| `USER_PORT`                                      | `8081`                                     | Host port of the user service                   |
 | `SNIPPET_PORT`                                   | `8082`                                     | Host port of the snippet service                |
 | `FRONTEND_PORT`                                  | `3000`                                     | Host port of the frontend                       |
 
@@ -118,25 +118,25 @@ SnippetBox is three applications that share one HTTP contract. Each backend serv
 
 ```mermaid
 graph LR
-  browser[Browser] --> nginx[snippetbox-frontend<br/>nginx :3000]
-  nginx -->|/api/v1/auth/*| user[snippetbox-backend-user<br/>:8080]
-  nginx -->|/api/v1/snippets*| snippet[snippetbox-backend-snippet<br/>:8080]
+  browser[Browser] --> nginx[snippetbox-msa-frontend<br/>nginx :3000]
+  nginx -->|/api/v1/auth/*| user[snippetbox-msa-backend-user<br/>:8081]
+  nginx -->|/api/v1/snippets*| snippet[snippetbox-msa-backend-snippet<br/>:8082]
   user --> userdb[(snippetbox_user<br/>users)]
   snippet --> snippetdb[(snippetbox_snippet<br/>snippets)]
 ```
 
 | Service                      | Owns                                                   | Database             |
 | ---------------------------- | ------------------------------------------------------ | -------------------- |
-| `snippetbox-backend-user`    | sign up, login, logout, current user; issues JWTs      | `snippetbox_user`    |
-| `snippetbox-backend-snippet` | create, read and list snippets; verifies JWTs          | `snippetbox_snippet` |
-| `snippetbox-frontend`        | the React app, and the single entry point for `/api/`  | none                 |
+| `snippetbox-msa-backend-user`    | sign up, login, logout, current user; issues JWTs      | `snippetbox_user`    |
+| `snippetbox-msa-backend-snippet` | create, read and list snippets; verifies JWTs          | `snippetbox_snippet` |
+| `snippetbox-msa-frontend`        | the React app, and the single entry point for `/api/`  | none                 |
 
 The services never call each other and never read each other's tables. The only thing they share is the JWT contract: HS256, issuer `snippetbox`, the user id as subject, a required expiry, and a common `JWT_SECRET`. By default both databases live in one MySQL instance, with one database and one database user per service.
 
 ### Project layout
 
 ```
-snippetbox-backend-user/
+snippetbox-msa-backend-user/
   cmd/backend/        entry point, wires configuration, database and server
   docs/               openapi.json and swagger.html, embedded into the binary
   internal/
@@ -158,7 +158,7 @@ snippetbox-backend-user/
   test/
     integration/      database, repository and services on SQLite
     e2e/              the whole service over HTTP
-snippetbox-backend-snippet/
+snippetbox-msa-backend-snippet/
   cmd/backend/        entry point, wires configuration, database and server
   docs/               openapi.json and swagger.html, embedded into the binary
   internal/
@@ -180,7 +180,7 @@ snippetbox-backend-snippet/
   test/
     integration/      database, repository and services on SQLite
     e2e/              the whole service over HTTP
-snippetbox-frontend/
+snippetbox-msa-frontend/
   src/
     app/              App, providers, routes, query client
     components/       layout and generic UI components

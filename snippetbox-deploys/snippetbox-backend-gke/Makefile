@@ -2,7 +2,7 @@ NAMESPACE ?= snippetbox
 PLATFORM ?= linux/amd64
 REPO_ROOT ?= $(abspath $(CURDIR)/..)
 DOCKER_DIR := $(REPO_ROOT)/snippetbox-docker
-IMAGES := snippetbox-backend-user snippetbox-backend-snippet snippetbox-frontend
+IMAGES := snippetbox-msa-backend-user snippetbox-msa-backend-snippet snippetbox-msa-frontend
 KUBECTL := kubectl
 ifndef IMAGE_TAG
 IMAGE_TAG := $(shell git rev-parse --short HEAD 2>/dev/null || date +%Y%m%d%H%M%S)
@@ -58,9 +58,9 @@ deploy: secrets $(REQUIRED)
 
 rollout:
 	$(KUBECTL) -n $(NAMESPACE) rollout status statefulset/snippetbox-mysql --timeout=300s
-	$(KUBECTL) -n $(NAMESPACE) rollout status deployment/snippetbox-backend-user --timeout=300s
-	$(KUBECTL) -n $(NAMESPACE) rollout status deployment/snippetbox-backend-snippet --timeout=300s
-	$(KUBECTL) -n $(NAMESPACE) rollout status deployment/snippetbox-frontend --timeout=300s
+	$(KUBECTL) -n $(NAMESPACE) rollout status deployment/snippetbox-msa-backend-user --timeout=300s
+	$(KUBECTL) -n $(NAMESPACE) rollout status deployment/snippetbox-msa-backend-snippet --timeout=300s
+	$(KUBECTL) -n $(NAMESPACE) rollout status deployment/snippetbox-msa-frontend --timeout=300s
 
 status:
 	$(KUBECTL) -n $(NAMESPACE) get pods,svc,ingress,hpa,pdb,pvc

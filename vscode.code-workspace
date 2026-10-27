@@ -1,16 +1,16 @@
 {
     "folders": [
         {
-            "name": "snippetbox-backend-user",
-            "path": "snippetbox-backend-user"
+            "name": "snippetbox-msa-backend-user",
+            "path": "snippetbox-msa-backend-user"
         },
         {
-            "name": "snippetbox-backend-snippet",
-            "path": "snippetbox-backend-snippet"
+            "name": "snippetbox-msa-backend-snippet",
+            "path": "snippetbox-msa-backend-snippet"
         },
         {
-            "name": "snippetbox-frontend",
-            "path": "snippetbox-frontend"
+            "name": "snippetbox-msa-frontend",
+            "path": "snippetbox-msa-frontend"
         },
         {
             "name": "snippetbox-docker",

@@ -5,11 +5,11 @@ resources:
   - ../base
   - ingress.yaml
 images:
-  - name: snippetbox-backend-user
+  - name: snippetbox-msa-backend-user
     newTag: local
-  - name: snippetbox-backend-snippet
+  - name: snippetbox-msa-backend-snippet
     newTag: local
-  - name: snippetbox-frontend
+  - name: snippetbox-msa-frontend
     newTag: local
 configMapGenerator:
   - name: snippetbox-config

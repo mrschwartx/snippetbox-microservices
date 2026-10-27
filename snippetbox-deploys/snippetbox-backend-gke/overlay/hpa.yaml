@@ -1,16 +1,16 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: snippetbox-backend-user
+  name: snippetbox-msa-backend-user
   labels:
-    app.kubernetes.io/name: snippetbox-backend-user
+    app.kubernetes.io/name: snippetbox-msa-backend-user
     app.kubernetes.io/component: backend
     app.kubernetes.io/part-of: snippetbox
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: snippetbox-backend-user
+    name: snippetbox-msa-backend-user
   minReplicas: 2
   maxReplicas: 6
   metrics:
@@ -24,16 +24,16 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: snippetbox-backend-snippet
+  name: snippetbox-msa-backend-snippet
   labels:
-    app.kubernetes.io/name: snippetbox-backend-snippet
+    app.kubernetes.io/name: snippetbox-msa-backend-snippet
     app.kubernetes.io/component: backend
     app.kubernetes.io/part-of: snippetbox
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: snippetbox-backend-snippet
+    name: snippetbox-msa-backend-snippet
   minReplicas: 2
   maxReplicas: 6
   metrics:
@@ -47,16 +47,16 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: snippetbox-frontend
+  name: snippetbox-msa-frontend
   labels:
-    app.kubernetes.io/name: snippetbox-frontend
+    app.kubernetes.io/name: snippetbox-msa-frontend
     app.kubernetes.io/component: frontend
     app.kubernetes.io/part-of: snippetbox
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: snippetbox-frontend
+    name: snippetbox-msa-frontend
   minReplicas: 2
   maxReplicas: 4
   metrics:

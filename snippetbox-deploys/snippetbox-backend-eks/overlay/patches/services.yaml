@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: snippetbox-backend-user
+  name: snippetbox-msa-backend-user
   annotations:
     alb.ingress.kubernetes.io/healthcheck-path: /ping
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: snippetbox-backend-snippet
+  name: snippetbox-msa-backend-snippet
   annotations:
     alb.ingress.kubernetes.io/healthcheck-path: /ping

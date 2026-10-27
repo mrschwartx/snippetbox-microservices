@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snippetbox-backend-snippet
+  name: snippetbox-msa-backend-snippet
   labels:
-    app.kubernetes.io/name: snippetbox-backend-snippet
+    app.kubernetes.io/name: snippetbox-msa-backend-snippet
     app.kubernetes.io/component: backend
     app.kubernetes.io/part-of: snippetbox
 spec:
@@ -16,15 +16,15 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app.kubernetes.io/name: snippetbox-backend-snippet
+      app.kubernetes.io/name: snippetbox-msa-backend-snippet
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: snippetbox-backend-snippet
+        app.kubernetes.io/name: snippetbox-msa-backend-snippet
         app.kubernetes.io/component: backend
         app.kubernetes.io/part-of: snippetbox
     spec:
-      serviceAccountName: snippetbox-backend-snippet
+      serviceAccountName: snippetbox-msa-backend-snippet
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 30
       securityContext:
@@ -35,7 +35,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: backend
-          image: snippetbox-backend-snippet
+          image: snippetbox-msa-backend-snippet
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

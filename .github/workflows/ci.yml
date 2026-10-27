@@ -103,20 +103,20 @@ jobs:
       - name: Build
         run: make build
 
-  snippetbox-frontend-quality:
+  snippetbox-msa-frontend-quality:
     name: SnippetBox frontend code quality
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: snippetbox-frontend
+        working-directory: snippetbox-msa-frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: snippetbox-frontend/package-lock.json
+          cache-dependency-path: snippetbox-msa-frontend/package-lock.json
       - name: Install
         run: npm ci
       - name: Lint
@@ -133,44 +133,44 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
-          path: snippetbox-frontend/coverage
+          path: snippetbox-msa-frontend/coverage
           retention-days: 7
 
-  snippetbox-frontend-build:
+  snippetbox-msa-frontend-build:
     name: SnippetBox frontend build
     runs-on: ubuntu-latest
-    needs: snippetbox-frontend-quality
+    needs: snippetbox-msa-frontend-quality
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: snippetbox-frontend
+        working-directory: snippetbox-msa-frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: snippetbox-frontend/package-lock.json
+          cache-dependency-path: snippetbox-msa-frontend/package-lock.json
       - name: Install
         run: npm ci
       - name: Build
         run: npm run build
 
-  snippetbox-frontend-e2e-browser:
+  snippetbox-msa-frontend-e2e-browser:
     name: SnippetBox frontend end-to-end browser
     runs-on: ubuntu-latest
-    needs: snippetbox-frontend-build
+    needs: snippetbox-msa-frontend-build
     timeout-minutes: 20
     defaults:
       run:
-        working-directory: snippetbox-frontend
+        working-directory: snippetbox-msa-frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: snippetbox-frontend/package-lock.json
+          cache-dependency-path: snippetbox-msa-frontend/package-lock.json
       - name: Install
         run: npm ci
       - name: Install browser
@@ -183,14 +183,14 @@ jobs:
         with:
           name: playwright-report
           path: |
-            snippetbox-frontend/playwright-report
-            snippetbox-frontend/test-results
+            snippetbox-msa-frontend/playwright-report
+            snippetbox-msa-frontend/test-results
           retention-days: 7
 
   snippetbox-docker:
     name: SnippetBox docker containers
     runs-on: ubuntu-latest
-    needs: [snippetbox-backend-build, snippetbox-frontend-build]
+    needs: [snippetbox-backend-build, snippetbox-msa-frontend-build]
     timeout-minutes: 25
     defaults:
       run:
@@ -201,28 +201,28 @@ jobs:
       - name: Build user service image
         uses: docker/build-push-action@v6
         with:
-          context: snippetbox-backend-user
-          file: snippetbox-docker/snippetbox-backend-user/Dockerfile
+          context: snippetbox-msa-backend-user
+          file: snippetbox-docker/snippetbox-msa-backend-user/Dockerfile
           load: true
-          tags: snippetbox-backend-user:local
+          tags: snippetbox-msa-backend-user:local
           cache-from: type=gha,scope=backend-user
           cache-to: type=gha,mode=max,scope=backend-user
       - name: Build snippet service image
         uses: docker/build-push-action@v6
         with:
-          context: snippetbox-backend-snippet
-          file: snippetbox-docker/snippetbox-backend-snippet/Dockerfile
+          context: snippetbox-msa-backend-snippet
+          file: snippetbox-docker/snippetbox-msa-backend-snippet/Dockerfile
           load: true
-          tags: snippetbox-backend-snippet:local
+          tags: snippetbox-msa-backend-snippet:local
           cache-from: type=gha,scope=backend-snippet
           cache-to: type=gha,mode=max,scope=backend-snippet
       - name: Build frontend image
         uses: docker/build-push-action@v6
         with:
-          context: snippetbox-frontend
-          file: snippetbox-docker/snippetbox-frontend/Dockerfile
+          context: snippetbox-msa-frontend
+          file: snippetbox-docker/snippetbox-msa-frontend/Dockerfile
           load: true
-          tags: snippetbox-frontend:local
+          tags: snippetbox-msa-frontend:local
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
       - name: Prepare env
@@ -231,7 +231,7 @@ jobs:
         run: docker compose -f docker-compose.local.yml up -d --no-build
       - name: Wait for health checks
         run: |
-          for port in 8080 8082; do
+          for port in 8081 8082; do
             ready=false
             for i in $(seq 1 60); do
               if curl -fsS "http://localhost:$port/ping" | grep -q '"status":"ok"'; then
@@ -248,9 +248,9 @@ jobs:
       - name: Check user service
         run: |
           for path in /ping /swagger/ /swagger/openapi.json; do
-            curl -fsS -o /dev/null "http://localhost:8080$path"
+            curl -fsS -o /dev/null "http://localhost:8081$path"
           done
-          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/snippets)" = "404"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/api/v1/snippets)" = "404"
       - name: Check snippet service
         run: |
           for path in /ping /swagger/ /swagger/openapi.json /api/v1/snippets; do
